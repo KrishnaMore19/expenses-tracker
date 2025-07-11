@@ -19,7 +19,7 @@ const app = express();
 // CORS setup for both local and deployed frontend
 const allowedOrigins = [
   'http://localhost:5173',
-  'https://expenses-tracker-seven-blue.vercel.app'
+  'https://expenses-tracker-teal-theta.vercel.app'
 ];
 
 app.use(cors({
