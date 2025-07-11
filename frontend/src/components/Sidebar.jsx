@@ -6,10 +6,6 @@ import {
   LayoutDashboard, 
   TrendingUp, 
   Receipt, 
-  PieChart, 
-  Settings, 
-  CreditCard,
-  Calendar
 } from 'lucide-react';
 
 const Sidebar = () => {
@@ -17,15 +13,11 @@ const Sidebar = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const location = useLocation();
 
-  // Toggle Sidebar
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  // Check if the current path matches the link
-  const isActive = (path) => {
-    return location.pathname === path;
-  };
+  const isActive = (path) => location.pathname === path;
 
   return (
     <>
@@ -50,14 +42,9 @@ const Sidebar = () => {
 
         {/* Sidebar Content */}
         <div className="h-full flex flex-col">
-          {/* Brand Header */}
-          <div className="px-6 py-8 border-b border-gray-100">
-            <h2 className="text-blue-600 font-bold text-2xl flex items-center">
-              <PieChart className="mr-2" size={24} />
-              Expense Manager
-            </h2>
-          </div>
-          
+
+          {/* Removed Logo/Header Section */}
+
           {user ? (
             <>
               {/* User Profile */}
@@ -74,7 +61,7 @@ const Sidebar = () => {
                   </div>
                 </div>
               </div>
-              
+
               {/* Navigation Links */}
               <div className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
                 <Link 
@@ -112,13 +99,10 @@ const Sidebar = () => {
                   <Receipt size={20} className="mr-3" />
                   Expenses
                 </Link>
-                
-              
               </div>
               
               {/* Bottom Actions */}
               <div className="border-t border-gray-100 p-4 space-y-2">
-                
                 <button
                   onClick={logout}
                   className="flex items-center w-full py-3 px-4 text-red-600 hover:bg-red-50 rounded-lg transition-all"
