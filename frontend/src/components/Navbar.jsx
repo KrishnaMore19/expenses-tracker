@@ -18,20 +18,7 @@ const Navbar = () => {
         </div>
 
         {/* Right side icons */}
-        <div className="flex items-center space-x-4">
-          <button className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-all">
-            <Bell size={20} />
-          </button>
-          <button className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-all">
-            <Settings size={20} />
-          </button>
-          <Link 
-            to="/profile"
-            className="flex items-center justify-center bg-blue-50 p-2 rounded-full hover:bg-blue-100 transition-all"
-          >
-            <User size={20} className="text-blue-600" />
-          </Link>
-        </div>
+        
       </div>
     </nav>
   );

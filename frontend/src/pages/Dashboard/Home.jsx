@@ -1,22 +1,21 @@
+// --- your imports (unchanged) ---
 import { useEffect, useState, useMemo } from "react";
 import { fetchExpenses } from "/src/api/expenses";
 import { getIncome } from "/src/api/income";
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
-import { useAuth } from "/src/context/AuthContext"; // Adjust this import path as needed
+import { useAuth } from "/src/context/AuthContext";
 
-// Enhanced color palette
-const INCOME_COLORS = ["#4CAF50", "#81C784", "#A5D6A7", "#C8E6C9", "#E8F5E9", "#F1F8E9"];
+// --- colors (unchanged) ---
 const EXPENSE_COLORS = ["#F44336", "#E57373", "#EF9A9A", "#FFCDD2", "#FFEBEE", "#FFF8F8"];
 const OVERVIEW_COLORS = ["#4CAF50", "#F44336"];
 
-// Card component for consistent styling
+// --- card and transaction component (unchanged) ---
 const Card = ({ children, className = "" }) => (
   <div className={`bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 ${className}`}>
     {children}
   </div>
 );
 
-// Transaction item component
 const TransactionItem = ({ transaction }) => (
   <div className="flex items-center justify-between p-3 border-b border-gray-100 hover:bg-gray-50 transition-colors duration-200">
     <div className="flex items-center">
@@ -40,11 +39,10 @@ const TransactionItem = ({ transaction }) => (
   </div>
 );
 
-
 const Home = () => {
-  const { user } = useAuth(); // Get the user from auth context
-  const userId = user?._id; // Extract the userId
-  
+  const { user } = useAuth();
+  const userId = user?._id;
+
   const [expenses, setExpenses] = useState([]);
   const [incomes, setIncomes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -53,12 +51,11 @@ const Home = () => {
   useEffect(() => {
     const loadData = async () => {
       if (!userId) {
-        console.log("No userId available in auth context");
         setError("Authentication required");
         setLoading(false);
         return;
       }
-      
+
       try {
         setLoading(true);
         const [expenseData, incomeData] = await Promise.all([
@@ -75,11 +72,10 @@ const Home = () => {
         setLoading(false);
       }
     };
-    
+
     loadData();
   }, [userId]);
 
-  // Memoized calculations
   const totalIncome = useMemo(() => incomes.reduce((acc, i) => acc + i.amount, 0), [incomes]);
   const totalExpense = useMemo(() => expenses.reduce((acc, e) => acc + e.amount, 0), [expenses]);
   const balance = totalIncome - totalExpense;
@@ -87,14 +83,12 @@ const Home = () => {
   const recentIncomes = useMemo(() => incomes.slice(0, 6), [incomes]);
   const expenseData = useMemo(() => recentExpenses.map(e => ({ name: e.title, value: e.amount })), [recentExpenses]);
   const incomeData = useMemo(() => recentIncomes.map(i => ({ name: i.title, value: i.amount })), [recentIncomes]);
-  
-  // Combined recent transactions (both incomes and expenses)
+
   const recentTransactions = useMemo(() => {
     const combined = [
       ...recentExpenses.map(e => ({ ...e, type: 'expense' })),
       ...recentIncomes.map(i => ({ ...i, type: 'income' }))
     ];
-    // Sort by date (assuming there's a date property)
     return combined.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0)).slice(0, 6);
   }, [recentExpenses, recentIncomes]);
 
@@ -123,13 +117,7 @@ const Home = () => {
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
-      {/* Page Title */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-800">Financial Dashboard</h1>
-        <p className="text-gray-600">Track your income, expenses, and overall financial health</p>
-      </div>
-      
-      {/* Overview Section */}
+      {/* Top Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <Card className="p-6 relative overflow-hidden">
           <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-green-100 opacity-50"></div>
@@ -137,14 +125,12 @@ const Home = () => {
           <p className="text-3xl font-bold text-green-500">${totalIncome.toLocaleString()}</p>
           <div className="mt-2 text-sm text-gray-500">From {incomes.length} sources</div>
         </Card>
-        
         <Card className="p-6 relative overflow-hidden">
           <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-red-100 opacity-50"></div>
           <h3 className="text-lg font-medium text-gray-500 mb-1">Total Expense</h3>
           <p className="text-3xl font-bold text-red-500">${totalExpense.toLocaleString()}</p>
           <div className="mt-2 text-sm text-gray-500">From {expenses.length} transactions</div>
         </Card>
-        
         <Card className="p-6 relative overflow-hidden">
           <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-blue-100 opacity-50"></div>
           <h3 className="text-lg font-medium text-gray-500 mb-1">Balance</h3>
@@ -157,9 +143,8 @@ const Home = () => {
         </Card>
       </div>
 
-      {/* Recent Transactions and Financial Overview */}
+      {/* Recent Transactions */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        {/* Recent Transactions */}
         <Card>
           <div className="border-b border-gray-100 p-4">
             <h2 className="text-xl font-semibold text-gray-800">Recent Transactions</h2>
@@ -172,7 +157,7 @@ const Home = () => {
             ) : (
               <div className="p-6 text-center text-gray-500">
                 <p>No recent transactions</p>
-                <p className="text-sm mt-2">Your transactions will appear here</p>
+                <p className="text-sm mt-2">Total: $0</p>
               </div>
             )}
           </div>
@@ -196,16 +181,14 @@ const Home = () => {
                 <PieChart>
                   <Pie 
                     data={[
-                      { name: "Income", value: totalIncome || 0.1 },  // Use 0.1 to prevent empty chart
+                      { name: "Income", value: totalIncome || 0.1 },
                       { name: "Expense", value: totalExpense || 0.1 }
                     ]} 
                     cx="50%" 
                     cy="50%" 
                     outerRadius={80} 
-                    innerRadius={60} // Creates a donut chart
-                    fill="#8884d8" 
+                    innerRadius={60}
                     dataKey="value"
-                    paddingAngle={2}
                     label
                   >
                     <Cell fill="#4CAF50" stroke="#FFFFFF" strokeWidth={2} />
@@ -227,37 +210,34 @@ const Home = () => {
         </Card>
       </div>
 
-      {/* Expense Breakdown and Income Breakdown */}
+      {/* Expense Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        {/* Expense Section */}
-        <div className="grid grid-cols-1 gap-6">
-          {/* Recent Expenses List */}
-          <Card>
-            <div className="border-b border-gray-100 p-4 flex justify-between items-center">
-              <h2 className="text-xl font-semibold text-gray-800">Recent Expenses</h2>
-              <span className="text-sm font-medium px-3 py-1 bg-red-100 text-red-600 rounded-full">
-                ${totalExpense.toLocaleString()}
-              </span>
-            </div>
-            <div className="divide-y divide-gray-100">
-              {recentExpenses.length > 0 ? (
-                recentExpenses.map((expense) => (
-                  <div key={expense._id} className="p-3 flex justify-between hover:bg-gray-50">
-                    <div>
-                      <p className="font-medium">{expense.title}</p>
-                      <p className="text-xs text-gray-500">{expense.date ? new Date(expense.date).toLocaleDateString() : 'No date'}</p>
-                    </div>
-                    <span className="font-bold text-red-500">${expense.amount}</span>
+        <Card>
+          <div className="border-b border-gray-100 p-4 flex justify-between items-center">
+            <h2 className="text-xl font-semibold text-gray-800">Recent Expenses</h2>
+            <span className="text-sm font-medium px-3 py-1 bg-red-100 text-red-600 rounded-full">
+              ${totalExpense.toLocaleString()}
+            </span>
+          </div>
+          <div className="divide-y divide-gray-100">
+            {recentExpenses.length > 0 ? (
+              recentExpenses.map((expense) => (
+                <div key={expense._id} className="p-3 flex justify-between hover:bg-gray-50">
+                  <div>
+                    <p className="font-medium">{expense.title}</p>
+                    <p className="text-xs text-gray-500">{expense.date ? new Date(expense.date).toLocaleDateString() : 'No date'}</p>
                   </div>
-                ))
-              ) : (
-                <div className="p-6 text-center text-gray-500">
-                  <p>No recent expenses</p>
+                  <span className="font-bold text-red-500">${expense.amount}</span>
                 </div>
-              )}
-            </div>
-          </Card>
-        </div>
+              ))
+            ) : (
+              <div className="p-6 text-center text-gray-500">
+                <p>No recent expenses</p>
+                <p className="text-sm mt-2">Total: $0</p>
+              </div>
+            )}
+          </div>
+        </Card>
 
         {/* Expense Breakdown Pie Chart */}
         <Card>
@@ -274,9 +254,7 @@ const Home = () => {
                     cy="50%" 
                     outerRadius={80} 
                     innerRadius={30}
-                    fill="#FF5722" 
                     dataKey="value"
-                    paddingAngle={1}
                     label
                   >
                     {expenseData.map((entry, index) => (
@@ -301,9 +279,8 @@ const Home = () => {
         </Card>
       </div>
 
-      {/* Income Breakdown section */}
+      {/* Income Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Recent Income List */}
         <Card>
           <div className="border-b border-gray-100 p-4 flex justify-between items-center">
             <h2 className="text-xl font-semibold text-gray-800">Recent Income</h2>
@@ -325,12 +302,13 @@ const Home = () => {
             ) : (
               <div className="p-6 text-center text-gray-500">
                 <p>No recent income</p>
+                <p className="text-sm mt-2">Total: $0</p>
               </div>
             )}
           </div>
         </Card>
 
-        {/* Income Breakdown Pie Chart */}
+        {/* Income Pie */}
         <Card>
           <div className="border-b border-gray-100 p-4">
             <h2 className="text-xl font-semibold text-gray-800">Income Breakdown</h2>
@@ -345,15 +323,13 @@ const Home = () => {
                     cy="50%" 
                     outerRadius={80} 
                     innerRadius={30}
-                    fill="#4CAF50" 
                     dataKey="value"
-                    paddingAngle={1}
                     label
                   >
                     {incomeData.map((entry, index) => (
                       <Cell 
                         key={`cell-${index}`} 
-                        fill={INCOME_COLORS[index % INCOME_COLORS.length]} 
+                        fill={EXPENSE_COLORS[index % EXPENSE_COLORS.length]} 
                         stroke="#FFFFFF"
                         strokeWidth={1}
                       />
