@@ -6,21 +6,22 @@ import Sidebar from "../components/Sidebar";
 const DashboardLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
+  // Define Tailwind CSS classes for sidebar width and corresponding main content margin
   const sidebarWidthClass = isSidebarOpen ? "w-64" : "w-20";
   const mainMarginClass = isSidebarOpen ? "ml-64" : "ml-20";
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
-      {/* Navbar */}
-      <header className="sticky top-0 z-50 w-full bg-white shadow-md h-16">
+      {/* Sticky Navbar */}
+      <header className="sticky top-0 z-50 w-full bg-white shadow-md">
         <Navbar toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
       </header>
 
-      {/* Layout */}
+      {/* Layout Container */}
       <div className="flex flex-1">
-        {/* Sidebar */}
+        {/* Fixed Sidebar with increased top padding */}
         <aside
-          className={`fixed top-16 left-0 h-[calc(100vh-4rem)] bg-white text-gray-700 shadow-lg transition-all duration-300 ${sidebarWidthClass} z-40`}
+          className={`fixed top-0 left-0 h-screen bg-gray-800 text-white transition-all duration-300 ${sidebarWidthClass} pt-24`}
         >
           <Sidebar
             isOpen={isSidebarOpen}
@@ -28,8 +29,8 @@ const DashboardLayout = () => {
           />
         </aside>
 
-        {/* Main Content */}
-        <main className={`flex-1 p-6 transition-all duration-300 ${mainMarginClass} mt-16`}>
+        {/* Main Content Area with margin to accommodate the fixed sidebar */}
+        <main className={`flex-1 p-6 transition-all duration-300 ${mainMarginClass}`}>
           <Outlet />
         </main>
       </div>

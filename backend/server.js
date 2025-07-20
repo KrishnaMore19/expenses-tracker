@@ -16,28 +16,10 @@ connectDB();
 // Initialize Express app
 const app = express();
 
-// CORS setup for both local and deployed frontend
-const allowedOrigins = [
-  'http://localhost:5173',
-  'https://expenses-tracker-teal-theta.vercel.app'
-];
-
-app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl)
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  methods: 'GET,POST,PUT,DELETE',
-  credentials: true
-}));
-
 // Middleware
-app.use(express.json());
+app.use(express.json()); // ✅ Ensure JSON parsing middleware is before routes
 app.use(helmet());
+app.use(cors({ origin: 'http://localhost:5173', methods: 'GET,POST,PUT,DELETE', credentials: true }));
 
 // API Routes
 app.use('/api/auth', userRoutes);
@@ -51,6 +33,4 @@ app.get('/', (req, res) => {
 
 // Start server
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () =>
-  console.log(`🚀 Server running on http://localhost:${PORT}`)
-);
+app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));

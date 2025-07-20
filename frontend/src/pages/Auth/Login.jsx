@@ -15,6 +15,8 @@ const Login = () => {
     e.preventDefault();
     setIsLoading(true);
 
+    console.log("Attempting login with:", { email, password });
+
     if (!email.trim() || !password.trim()) {
       toast.error("Email and password are required");
       setIsLoading(false);
@@ -87,6 +89,9 @@ const Login = () => {
         <div className="mt-4 text-center">
           <p>
             Don't have an account? <Link to="/signup" className="text-blue-600">Sign Up</Link>
+          </p>
+          <p>
+            Forgot your password? <Link to="/forgot-password" className="text-blue-600">Recover it</Link>
           </p>
         </div>
       </form>

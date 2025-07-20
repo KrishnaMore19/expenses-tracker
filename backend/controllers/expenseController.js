@@ -30,11 +30,10 @@ export const addExpense = async (req, res) => {
 };
 
 // Get All Expenses
-// Get All Expenses
 export const getExpenses = async (req, res) => {
   const { userId } = req.query;
 
-  console.log("🔍 Backend received userId:", userId);
+  console.log("🔍 Backend received userId:", userId); // Debugging log
 
   if (!userId) {
     return res.status(400).json({ message: "User ID is required" });
@@ -43,14 +42,17 @@ export const getExpenses = async (req, res) => {
   try {
     const expenses = await Expense.find({ user: userId }).sort({ date: -1 });
 
-    // ✅ Always return 200 OK, even if empty
-    res.status(200).json(expenses); 
+    if (!expenses.length) {
+      console.log("⚠️ No expenses found for this user.");
+      return res.status(404).json({ message: "No expenses found for this user." });
+    }
+
+    res.json(expenses);
   } catch (error) {
     console.error("🚨 Error fetching expenses:", error);
     res.status(500).json({ message: "Error fetching expenses", error: error.message });
   }
 };
-
 
 // Update Expense
 export const updateExpense = async (req, res) => {

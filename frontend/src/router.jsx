@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 
 // Layouts
@@ -14,39 +14,44 @@ import Home from './pages/Dashboard/Home';
 import Income from './pages/Dashboard/Income';
 import Expenses from './pages/Dashboard/Expenses';
 
+
 // PrivateRoute component to protect routes
 import PrivateRoute from './components/PrivateRoute';
 
 const AppRouter = () => {
   const { loading } = useAuth();
   console.log("AppRouter rendered");
-
+  
+  // Show a loading indicator while checking auth status
   if (loading) {
     return <div className="flex justify-center items-center h-screen">Loading application...</div>;
   }
-
+  
   return (
-    <Routes>
-      {/* Public Routes */}
-      <Route path="/login" element={<AuthLayout><Login /></AuthLayout>} />
-      <Route path="/signup" element={<AuthLayout><Signup /></AuthLayout>} />
-      <Route path="/forgot-password" element={<AuthLayout><ForgotPassword /></AuthLayout>} />
+    <Router>
+      <Routes>
+        {/* Public Routes */}
+        <Route path="/login" element={<AuthLayout><Login /></AuthLayout>} />
+        <Route path="/signup" element={<AuthLayout><Signup /></AuthLayout>} />
+        <Route path="/forgot-password" element={<AuthLayout><ForgotPassword /></AuthLayout>} />
 
-      {/* Protected Routes */}
-      <Route element={<PrivateRoute />}>
-        <Route path="/dashboard" element={<DashboardLayout />}>
-          <Route index element={<Home />} />
-          <Route path="income" element={<Income />} />
-          <Route path="expenses" element={<Expenses />} />
+        {/* Protected Routes */}
+        <Route element={<PrivateRoute />}>
+          <Route path="/dashboard" element={<DashboardLayout />}>
+            <Route index element={<Home />} />
+            <Route path="income" element={<Income />} />
+            <Route path="expenses" element={<Expenses />} />
+            
+          </Route>
         </Route>
-      </Route>
 
-      {/* Root Redirect */}
-      <Route path="/" element={<Navigate to="/dashboard" />} />
-
-      {/* Fallback Route */}
-      <Route path="*" element={<Navigate to="/login" />} />
-    </Routes>
+        {/* Redirect root to dashboard if authenticated, otherwise to login */}
+        <Route path="/" element={<Navigate to="/dashboard" />} />
+        
+        {/* Redirect to login if route doesn't exist */}
+        <Route path="*" element={<Navigate to="/login" />} />
+      </Routes>
+    </Router>
   );
 };
 
