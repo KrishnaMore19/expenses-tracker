@@ -1,52 +1,59 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: expenses-backend
+  name: mongodb
   labels:
-    app: expenses-backend
+    app: mongodb
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: expenses-backend
+      app: mongodb
   template:
     metadata:
       labels:
-        app: expenses-backend
+        app: mongodb
     spec:
       containers:
-      - name: expenses-backend
-        image: expense-tracker-backend:latest
-        imagePullPolicy: Never
+      - name: mongodb
+        image: mongo:6
         ports:
-        - containerPort: 3000
+        - containerPort: 27017
         env:
-        - name: PORT
-          value: "3000"
-        - name: MONGO_URI  # Fixed: Match Docker Compose variable name
-          valueFrom:
-            secretKeyRef:
-              name: mongodb-secret
-              key: connection_string
+        - name: MONGO_INITDB_DATABASE
+          value: "expense_tracker"
         volumeMounts:
-        - name: backend-data
-          mountPath: /app/data
+        - name: mongo-data
+          mountPath: /data/db
       volumes:
-      - name: backend-data
+      - name: mongo-data
         persistentVolumeClaim:
-          claimName: backend-pvc
+          claimName: mongo-pvc
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: backend-pvc
+  name: mongo-pvc
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 1Gi
+      storage: 5Gi
 ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb-service
+spec:
+  selector:
+    app: mongodb
+  ports:
+  - port: 27017
+    targetPort: 27017
+  type: ClusterIP
+---
+# Updated Secret for local MongoDB
 apiVersion: v1
 kind: Secret
 metadata:

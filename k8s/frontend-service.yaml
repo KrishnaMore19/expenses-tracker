@@ -7,5 +7,5 @@ spec:
     app: expenses-frontend
   ports:
   - port: 80
-    targetPort: 5173
-  type: LoadBalancer
+    targetPort: 5173  # Fixed: Should match container port
+  type: ClusterIP

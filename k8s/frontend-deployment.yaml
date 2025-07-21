@@ -16,9 +16,10 @@ spec:
     spec:
       containers:
       - name: expenses-frontend
-        image: krishna1908/expense-tracker-frontend:latest
+        image: expense-tracker-frontend:latest
+        imagePullPolicy: Never
         ports:
-        - containerPort: 5173
+        - containerPort: 5173  # Fixed: Should match Dockerfile EXPOSE 80
         env:
         - name: VITE_API_URL
           value: "http://expenses-backend-service:3000/api"

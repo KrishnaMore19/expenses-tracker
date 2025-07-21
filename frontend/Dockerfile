@@ -1,20 +1,35 @@
-# Use official Node image
-FROM node:18
 
-# Set working directory
+
+# Frontend Dockerfile (save as ./frontend/Dockerfile)
+
+# Build stage
+FROM node:18-alpine as build
+
 WORKDIR /app
 
-# Copy package.json and lock file (if exists)
+# Copy package files
 COPY package*.json ./
 
 # Install dependencies
 RUN npm install
 
-# Copy the rest of the frontend files
+# Copy source code
 COPY . .
 
-# Expose port for the frontend app (Vite default)
-EXPOSE 5173
+# Build the app
+RUN npm run build
 
-# Start the frontend app
-CMD ["npm", "run", "dev"]
+# Production stage
+FROM nginx:alpine
+
+# Copy custom nginx config
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Copy built app to nginx
+COPY --from=build /app/dist /usr/share/nginx/html
+
+# Expose port 80
+EXPOSE 80
+
+# Start nginx
+CMD ["nginx", "-g", "daemon off;"]

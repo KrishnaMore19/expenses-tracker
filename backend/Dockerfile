@@ -1,20 +1,21 @@
-# Use the official Node image
-FROM node:18
+
+# Backend Dockerfile (save as ./backend/Dockerfile)
+FROM node:18-alpine
 
 # Set working directory
 WORKDIR /app
 
-# Copy package.json and lock file
+# Copy package files
 COPY package*.json ./
 
 # Install dependencies
 RUN npm install
 
-# Copy the rest of the backend code
+# Copy source code
 COPY . .
 
-# Expose the port the backend server listens on
+# Expose port
 EXPOSE 3000
 
-# Start the backend server
+# Start the application
 CMD ["npm", "run", "dev"]

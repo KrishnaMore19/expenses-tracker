@@ -19,7 +19,11 @@ const app = express();
 // Middleware
 app.use(express.json()); // ✅ Ensure JSON parsing middleware is before routes
 app.use(helmet());
-app.use(cors({ origin: 'http://localhost:5173', methods: 'GET,POST,PUT,DELETE', credentials: true }));
+app.use(cors({ 
+  origin: ['http://localhost:8080', 'http://localhost:5173'], 
+  methods: 'GET,POST,PUT,DELETE', 
+  credentials: true 
+}))
 
 // API Routes
 app.use('/api/auth', userRoutes);
