@@ -1,6 +1,12 @@
 import User from "../models/User.js";
+import jwt from "jsonwebtoken";
 
-// Register User (Plain Text Password)
+// Helper to generate JWT
+const generateToken = (userId) => {
+  return jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: "7d" });
+};
+
+// Register User
 const registerUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -9,24 +15,24 @@ const registerUser = async (req, res) => {
       return res.status(400).json({ success: false, message: "Missing Details" });
     }
 
-    // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(409).json({ success: false, message: "Email already registered" });
     }
 
-    // Save user with plain text password ⚠️ (Insecure)
     const newUser = new User({ name, email, password });
     await newUser.save();
 
-    res.status(201).json({ success: true, message: "User registered successfully" });
+    const token = generateToken(newUser._id);
+
+    res.status(201).json({ success: true, message: "User registered successfully", token });
   } catch (error) {
     console.error("❌ Signup Error:", error);
     res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
 
-// Login User (Plain Text Password)
+// Login User
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -36,30 +42,27 @@ const loginUser = async (req, res) => {
       return res.status(404).json({ success: false, message: "User does not exist" });
     }
 
-    // Compare plain text password ⚠️ (Insecure)
-    if (user.password === password) {
-      // Remove password from response
-      const { password, ...userWithoutPassword } = user._doc;
-      return res.json({ success: true, message: "Login successful", user: userWithoutPassword });
-    } else {
+    if (user.password !== password) {
       return res.status(401).json({ success: false, message: "Invalid credentials" });
     }
+
+    const token = generateToken(user._id);
+    const { password: _, ...userWithoutPassword } = user._doc;
+
+    return res.json({ success: true, message: "Login successful", token, user: userWithoutPassword });
   } catch (error) {
     console.error("❌ Login Error:", error);
     res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
 
-// Get User Profile (Using Email - Risky)
+// Get User Profile (protected)
 const getUserProfile = async (req, res) => {
   try {
-    const { email } = req.body;
-
-    const user = await User.findOne({ email }).select("-password"); // Exclude password
+    const user = await User.findById(req.user.id).select("-password");
     if (!user) {
       return res.status(404).json({ success: false, message: "User not found" });
     }
-
     res.json({ success: true, user });
   } catch (error) {
     console.error("❌ Profile fetch error:", error);
